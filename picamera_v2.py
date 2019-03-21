@@ -55,6 +55,7 @@ class PiCameraV2():
         """
         stop video recording
         """
+        time.sleep(1)
         self.camera.stop_recording()
         self.camera.close()
         self.camera = None
