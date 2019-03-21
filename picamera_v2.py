@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Control of picameraV2
+Control of PiCamera V2
 """
 
 import time
