@@ -48,7 +48,7 @@ class SG90():
         self.frequency = FREQUENCY
         self.min_angle = min_angle
         self.max_angle = max_angle
-        self.cnter_angle = (self.min_angle + self.max_angle) // 2
+        self.center_angle = (self.min_angle + self.max_angle) // 2
         self.resolution = resolution
         self.pwm = None
         self.setup()
@@ -100,7 +100,7 @@ class SG90():
         """
         move to center
         """
-        self.move(self.cnter_angle)
+        self.move(self.center_angle)
         time.sleep(STEP_WAIT)
 
     def swing(self):
@@ -108,11 +108,11 @@ class SG90():
         swing
         """
         time.sleep(SWING_INTERVAL)
-        self.rotate(self.cnter_angle, self.max_angle)
+        self.rotate(self.center_angle, self.max_angle)
         time.sleep(SWING_INTERVAL)
         self.rotate(self.max_angle, self.min_angle, -1)
         time.sleep(SWING_INTERVAL)
-        self.rotate(self.min_angle, self.cnter_angle)
+        self.rotate(self.min_angle, self.center_angle)
         time.sleep(SWING_INTERVAL)
 
     def angle2dutyratio(self, angle):
