@@ -177,16 +177,14 @@ class SG90HW(SG90):
 
 
 if __name__ == '__main__':
-    with SG90(18) as s1:
-        with SG90(19) as s2:
-            s1.center()
-            s2.center()
-            s1.swing()
-            s2.swing()
+    with SG90(18) as s1, SG90(19) as s2:
+        s1.center()
+        s2.center()
+        s1.swing()
+        s2.swing()
 
-    with SG90HW(18) as s1:
-        with SG90HW(19) as s2:
-            s1.center()
-            s2.center()
-            s1.swing()
-            s2.swing()
+    with SG90HW(18) as s1, SG90HW(19) as s2:
+        s1.center()
+        s2.center()
+        s1.swing()
+        s2.swing()
