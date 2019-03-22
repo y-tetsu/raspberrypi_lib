@@ -5,6 +5,7 @@ Control of Camera Mount using PiCamera V2 and two SG90(for pan and tilt)
 """
 
 import time
+import math
 from picamera_v2 import PiCameraV2
 from sg90 import SG90, SG90HW
 
@@ -93,6 +94,13 @@ class CameraMount():
         self.servop.center()
         self.servot.center()
 
+    def position(self, x_angle, y_angle):
+        """
+        set camera at x,y position
+        """
+        self.servop.move(-x_angle)
+        self.servot.move(-y_angle)
+
     def video_pan(self, width, height, filename):
         """
         recording video while panning
@@ -143,3 +151,15 @@ if __name__ == '__main__':
     with CameraMount() as camera:
         camera.video_pan(240, 320, './video_pan.h264')
         camera.video_tilt(240, 320, './video_tilt.h264')
+
+        camera.center()
+        camera.start_video(240, 320, './video_clockwize.h264')
+
+        for degree in range(360*2, 0, -1):
+            x = math.cos(math.radians(degree)) * 80
+            y = math.sin(math.radians(degree)) * 80
+            camera.position(x, y)
+            time.sleep(STEP_WAIT * 2)
+
+        camera.center()
+        camera.stop_video()
