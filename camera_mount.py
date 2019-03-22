@@ -74,18 +74,31 @@ class CameraMount():
             self.servot.cleanup()
             self.servot = None
 
+    def start_video(self, width, height, filename):
+        """
+        start video recording
+        """
+        self.camera.start_video(width, height, filename)
+
+    def stop_video(self):
+        """
+        stop video recording
+        """
+        self.camera.stop_video()
+
+    def center(self):
+        """
+        set camera in center
+        """
+        self.servop.center()
+        self.servot.center()
+
     def video_pan(self, width, height, filename):
         """
         recording video while panning
         """
-        # set camera in center
-        self.servop.center()
-        self.servot.center()
-
-        # start video recording
-        self.camera.start_video(width, height, filename)
-
-        # pan camera
+        self.center()
+        self.start_video(width, height, filename)
         time.sleep(SWING_INTERVAL)
         self.rotate(self.servop, self.servot, self.servop.center_angle, self.servop.max_angle)
         time.sleep(SWING_INTERVAL)
@@ -93,22 +106,14 @@ class CameraMount():
         time.sleep(SWING_INTERVAL)
         self.rotate(self.servop, self.servot, self.servop.min_angle, self.servop.center_angle)
         time.sleep(SWING_INTERVAL)
-
-        # stop video recording
-        self.camera.stop_video()
+        self.stop_video()
 
     def video_tilt(self, width, height, filename):
         """
         recording video while tilting
         """
-        # set camera in center
-        self.servop.center()
-        self.servot.center()
-
-        # start video recording
-        self.camera.start_video(width, height, filename)
-
-        # tilt camera
+        self.center()
+        self.start_video(width, height, filename)
         time.sleep(SWING_INTERVAL)
         self.rotate(self.servot, self.servop, self.servot.center_angle, self.servot.min_angle, -1)
         time.sleep(SWING_INTERVAL)
@@ -116,9 +121,7 @@ class CameraMount():
         time.sleep(SWING_INTERVAL)
         self.rotate(self.servot, self.servop, self.servot.max_angle, self.servot.center_angle, -1)
         time.sleep(SWING_INTERVAL)
-
-        # stop video recording
-        self.camera.stop_video()
+        self.stop_video()
 
     def rotate(self, servo1, servo2, src_angle, dst_angle, step=1):
         """
