@@ -87,32 +87,56 @@ class CameraMount():
 
         # pan camera
         time.sleep(SWING_INTERVAL)
-        self.rotatep(self.servop.center_angle, self.servop.max_angle)
+        self.rotate(self.servop, self.servot, self.servop.center_angle, self.servop.max_angle)
         time.sleep(SWING_INTERVAL)
-        self.rotatep(self.servop.max_angle, self.servop.min_angle, -1)
+        self.rotate(self.servop, self.servot, self.servop.max_angle, self.servop.min_angle, -1)
         time.sleep(SWING_INTERVAL)
-        self.rotatep(self.servop.min_angle, self.servop.center_angle)
+        self.rotate(self.servop, self.servot, self.servop.min_angle, self.servop.center_angle)
         time.sleep(SWING_INTERVAL)
 
         # stop video recording
         self.camera.stop_video()
 
-    def rotatep(self, src_angle, dst_angle, step=1):
+    def video_tilt(self, width, height, filename):
         """
-        rotate for pan
+        recording video while tilting
         """
-        resolution = self.servop.resolution
-        fix_angle = self.servot.center_angle
+        # set camera in center
+        self.servop.center()
+        self.servot.center()
+
+        # start video recording
+        self.camera.start_video(width, height, filename)
+
+        # tilt camera
+        time.sleep(SWING_INTERVAL)
+        self.rotate(self.servot, self.servop, self.servot.center_angle, self.servot.min_angle, -1)
+        time.sleep(SWING_INTERVAL)
+        self.rotate(self.servot, self.servop, self.servot.min_angle, self.servot.max_angle)
+        time.sleep(SWING_INTERVAL)
+        self.rotate(self.servot, self.servop, self.servot.max_angle, self.servot.center_angle, -1)
+        time.sleep(SWING_INTERVAL)
+
+        # stop video recording
+        self.camera.stop_video()
+
+    def rotate(self, servo1, servo2, src_angle, dst_angle, step=1):
+        """
+        rotate servo1 and fix servo2
+        """
+        resolution = servo1.resolution
+        fix_angle = servo2.center_angle
 
         start = int(src_angle / resolution)
         end = int(dst_angle / resolution) + 1
 
         for angle in range(start, end, step):
-            self.servop.move(angle * resolution)
-            self.servot.move(fix_angle)
+            servo1.move(angle * resolution)
+            servo2.move(fix_angle)
             time.sleep(STEP_WAIT)
 
 
 if __name__ == '__main__':
     with CameraMount() as camera:
-        camera.video_pan(240, 320, './video.h264')
+        camera.video_pan(240, 320, './video_pan.h264')
+        camera.video_tilt(240, 320, './video_tilt.h264')
