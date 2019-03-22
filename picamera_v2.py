@@ -14,6 +14,7 @@ class PiCameraV2():
     """
     def __init__(self):
         self.camera = None
+        self.setup()
 
     def __enter__(self):
         return self
@@ -21,44 +22,17 @@ class PiCameraV2():
     def __exit__(self, ex_type, ex_value, trace):
         self.cleanup()
 
-    def capture_photo(self, width, height, filename):
+    def setup(self):
         """
-        capture photo
-        """
-        with picamera.PiCamera() as camera:
-            camera.resolution = width, height  # size
-            camera.hflip = True                # horizontal flip
-            camera.vflip = True                # vertical flip
-
-            time.sleep(1)                      # wait for startup camera
-            camera.capture(filename)           # capture photo
-
-    def start_video(self, width, height, filename):
-        """
-        start video recording
+        camera setup
         """
         try:
             self.camera = picamera.PiCamera()
-
-            self.camera.resolution = width, height  # size
-            self.camera.hflip = True                # horizontal flip
-            self.camera.vflip = True                # vertical flip
-
-            self.camera.start_recording(filename)   # start video recording
-            time.sleep(1)                           # wait for startup camera
+            self.camera.hflip = True  # horizontal flip
+            self.camera.vflip = True  # vertical flip
 
         except:
-            self.camera.close()
-            self.camera = None
-
-    def stop_video(self):
-        """
-        stop video recording
-        """
-        time.sleep(1)
-        self.camera.stop_recording()
-        self.camera.close()
-        self.camera = None
+            self.cleanup()
 
     def cleanup(self):
         """
@@ -66,6 +40,30 @@ class PiCameraV2():
         """
         if self.camera:
             self.camera.close()
+            self.camera = None
+
+    def capture_photo(self, width, height, filename):
+        """
+        capture photo
+        """
+        self.camera.resolution = width, height  # size
+        self.camera.capture(filename)           # capture photo
+
+    def start_video(self, width, height, filename):
+        """
+        start video recording
+        """
+        self.camera.resolution = width, height  # size
+        self.camera.start_recording(filename)   # start video recording
+        time.sleep(1)                           # wait for startup camera
+
+    def stop_video(self):
+        """
+        stop video recording
+        """
+        if self.camera:
+            time.sleep(1)
+            self.camera.stop_recording()
 
 
 if __name__ == '__main__':
