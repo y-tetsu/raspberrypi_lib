@@ -44,8 +44,8 @@ class PiCameraV2():
             self.camera.hflip = True                # horizontal flip
             self.camera.vflip = True                # vertical flip
 
-            time.sleep(1)                           # wait for startup camera
             self.camera.start_recording(filename)   # start video recording
+            time.sleep(1)                           # wait for startup camera
 
         except:
             self.camera.close()

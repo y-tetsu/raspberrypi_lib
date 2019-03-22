@@ -43,7 +43,7 @@ class SG90():
         5.00% : 0.050(1.0ms : -90°)
       -----------------------------
     """
-    def __init__(self, gpio, min_angle=-90, max_angle=90, resolution=0.25):
+    def __init__(self, gpio, min_angle=-90, max_angle=90, resolution=0.3):
         self.gpio = gpio
         self.frequency = FREQUENCY
         self.min_angle = min_angle
