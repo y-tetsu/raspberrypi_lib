@@ -6,8 +6,8 @@ Control of Camera Mount using PiCamera V2 and two SG90(for pan and tilt)
 
 import time
 import math
-from .picamera_v2 import PiCameraV2
-from .sg90 import SG90, SG90HW
+from picamera_v2 import PiCameraV2
+from sg90 import SG90, SG90HW
 
 STEP_WAIT = 0.005
 SWING_INTERVAL = 0.5
