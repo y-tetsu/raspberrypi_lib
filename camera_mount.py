@@ -6,8 +6,6 @@ Control of Camera Mount using PiCamera V2 and two SG90(for pan and tilt)
 
 import time
 import math
-from picamera_v2 import PiCameraV2
-from sg90 import SG90, SG90HW
 
 STEP_WAIT = 0.005
 SWING_INTERVAL = 0.5
@@ -17,21 +15,15 @@ class CameraMount():
     """
     Control of Camera Mount
      --------------------------------------------
-     gpiop : GPIO-PIN for pan
-     gpiot : GPIO-PIN for tilt
-     hwp   : True if using Hardware-PWM for gpiop
-     hwt   : True if using Hardware-PWM for gpiot
+     camera : Camera Object
+     servop : Servo Object for pan
+     servot : Servo Object for tilt
      --------------------------------------------
     """
-    def __init__(self, gpiop=18, gpiot=19, hwp=True, hwt=True):
-        self.gpiop = gpiop
-        self.gpiot = gpiot
-        self.hwp = hwp
-        self.hwt = hwt
-        self.camera = None
-        self.servop = None
-        self.servot = None
-        self.setup()
+    def __init__(self, camera, servop, servot):
+        self.camera = camera
+        self.servop = servop
+        self.servot = servot
 
     def __enter__(self):
         return self
@@ -39,40 +31,17 @@ class CameraMount():
     def __exit__(self, ex_type, ex_value, trace):
         self.cleanup()
 
-    def setup(self):
-        """
-        setup Camera Mount
-        """
-        try:
-            self.camera = PiCameraV2()
-
-            if self.hwp:
-                self.servop = SG90HW(self.gpiop)
-            else:
-                self.servop = SG90(self.gpiop)
-
-            if self.hwt:
-                self.servot = SG90HW(self.gpiot)
-            else:
-                self.servot = SG90(self.gpiot)
-
-        except:
-            self.cleanup()
-
     def cleanup(self):
         """
         cleanup Camera Mount
         """
         if self.camera:
-            self.camera.cleanup()
             self.camera = None
 
         if self.servop:
-            self.servop.cleanup()
             self.servop = None
 
         if self.servot:
-            self.servot.cleanup()
             self.servot = None
 
     def start_video(self, width, height, filename):
@@ -148,18 +117,22 @@ class CameraMount():
 
 
 if __name__ == '__main__':
-    with CameraMount() as camera:
-        camera.video_pan(240, 320, './video_pan.h264')
-        camera.video_tilt(240, 320, './video_tilt.h264')
+    from picamera_v2 import PiCameraV2
+    from sg90 import SG90, SG90HW
 
-        camera.center()
-        camera.start_video(240, 320, './video_clockwize.h264')
+    with PiCameraV2() as c, SG90HW(18) as sp, SG90HW(19) as st:
+        with CameraMount(c, sp, st) as cm:
+            cm.video_pan(240, 320, './video_pan.h264')
+            cm.video_tilt(240, 320, './video_tilt.h264')
 
-        for degree in range(360*2, 0, -1):
-            x = math.cos(math.radians(degree)) * 80
-            y = math.sin(math.radians(degree)) * 80
-            camera.position(x, y)
-            time.sleep(STEP_WAIT * 2)
+            cm.center()
+            cm.start_video(240, 320, './video_clockwize.h264')
 
-        camera.center()
-        camera.stop_video()
+            for degree in range(360*2, 0, -1):
+                x = math.cos(math.radians(degree)) * 80
+                y = math.sin(math.radians(degree)) * 80
+                cm.position(x, y)
+                time.sleep(STEP_WAIT * 2)
+
+            cm.center()
+            cm.stop_video()
